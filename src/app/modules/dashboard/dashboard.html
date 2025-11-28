@@ -1,0 +1,163 @@
+<section
+  class="min-h-screen text-fiord-900"
+  style="
+    background: linear-gradient(to bottom, white, var(--color-neutral-50), var(--color-brown-100));
+  "
+>
+  <div class="relative mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 font-inter">
+    <header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div class="text-center w-full">
+        <h1 class="text-3xl font-semibold uppercase tracking-[0.2em] text-brown-600">INVENTARIO</h1>
+      </div>
+    </header>
+
+    <div class="space-y-7 w-full rounded-2xl text-brown-100 p-6 shadow-xl shadow-brown-100/60">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="relative w-full">
+          <input
+            type="text"
+            [value]="search()"
+            (input)="onSearch($any($event.target).value)"
+            placeholder="Buscar productos por nombre o SKU"
+            class="h-12 w-full rounded-xl border border-brown-100 bg-white px-4 pr-12 text-sm text-fiord-900 shadow-inner shadow-brown-50 outline-none transition focus:border-brown-400 focus:ring-2 focus:ring-brown-200"
+          />
+          <span
+            class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-brown-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 5 5a7.5 7.5 0 0 0 11.65 11.65Z"
+              />
+            </svg>
+          </span>
+        </div>
+        <button
+          type="button"
+          (click)="toggleAddForm(true)"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-brown-200 bg-brown-100 px-4 py-3 text-sm font-semibold text-brown-800 shadow-sm transition hover:-translate-y-0.5 hover:border-brown-300 hover:bg-brown-200 focus:outline-none focus:ring-2 focus:ring-brown-300 focus:ring-offset-2"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+          </svg>
+          Agregar Producto
+        </button>
+      </div>
+
+      <hr class="border-brown-100/60 relative text-center" />
+
+      <div>
+        <div class="mt-6">
+          @if (filteredProducts().length === 0) {
+          <div
+            class="flex flex-col items-center justify-center gap-3 rounded-xl border border-brown-100 bg-white/70 px-6 py-10 text-center shadow-inner"
+          >
+            <div
+              class="flex h-14 w-14 items-center justify-center rounded-full bg-brown-100 text-brown-700 shadow-md shadow-brown-200/60"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.75"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 9v3m0 4h.01m-8.6-3.2 5.9-10.2c.8-1.4 2.8-1.4 3.6 0l5.9 10.2c.8 1.4-.2 3.2-1.8 3.2H5.2c-1.6 0-2.6-1.8-1.8-3.2Z"
+                />
+              </svg>
+            </div>
+            <div class="space-y-1">
+              <p class="text-lg font-semibold text-brown-800">No se encontraron productos</p>
+              <p class="text-sm text-neutral-600">
+                Intenta con otra palabra clave o limpia la búsqueda para ver todos los artículos.
+              </p>
+            </div>
+          </div>
+          } @else {
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            @for(product of filteredProducts(); track product.id) {
+            <article
+              class="group rounded-xl border border-brown-100 bg-white/80 p-4 shadow-sm transition hover:-translate-y-1 hover:border-brown-200 hover:shadow-lg hover:shadow-brown-200/30"
+              (click)="openDetail(product)"
+              role="button"
+              tabindex="0"
+            >
+                  <div class="flex items-start justify-between">
+                    <h3 class="text-base font-semibold text-brown-800">{{ product.name }}</h3>
+                    <span
+                      class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+                  [ngClass]="{
+                    'bg-success-100 text-success-700 border border-success-200':
+                      product.status === 'active',
+                    'bg-error-100 text-error-700 border border-error-200':
+                      product.status === 'inactive'
+                  }"
+                >
+                  {{ product.status === 'active' ? 'ACTIVO' : 'INACTIVO' }}
+                </span>
+              </div>
+              <p class="mt-1 text-xs text-neutral-500">SKU: {{ product.sku }}</p>
+              <div class="mt-4 flex items-end justify-between">
+                <div class="space-y-1">
+                  <p class="text-2xl font-semibold text-brown-700">
+                    ${{ product.price | number : '1.2-2' }}
+                  </p>
+                  <p class="text-xs text-neutral-600">
+                    En stock: <span class="font-semibold">{{ product.stock }}</span>
+                  </p>
+                </div>
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-lg bg-brown-100 text-brown-700 transition group-hover:bg-brown-600 group-hover:text-white"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </article>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(showAddForm()){
+    <app-add-product-form
+    (close)="toggleAddForm(false)"
+    (submitProduct)="addProduct($event)"
+    />
+  }
+  @if(selectedProduct()){
+    <app-product-detail
+    [product]="selectedProduct()!"
+    (close)="closeDetail()"
+    />
+  }
+</section>
